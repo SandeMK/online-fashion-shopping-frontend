@@ -3,22 +3,25 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
-import SignIn from './pages/Authentication/SignIn';
-import SignUp from './pages/Authentication/SignUp';
 import Calendar from './pages/Calendar';
 import Chart from './pages/Chart';
-import ECommerce from './pages/Dashboard/ECommerce';
 import FormElements from './pages/Form/FormElements';
 import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
-import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
+import { useAppContext } from './context';
+import Authentication from './pages/Authentication/Authentication';
+import StyleView from './pages/StyleView';
+import Messages from './pages/Messages';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
+
+  const { state: { isAuthenticated }} = useAppContext()
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -32,13 +35,13 @@ function App() {
     <Loader />
   ) : (
     <>
-      <Routes>
+      <Routes location={!isAuthenticated && '/authentication'}>
         <Route
-          index
+         index
           element={
             <>
-              <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ECommerce />
+              <PageTitle title="Dashboard" />
+              <Dashboard />
             </>
           }
         />
@@ -79,15 +82,6 @@ function App() {
           }
         />
         <Route
-          path="/tables"
-          element={
-            <>
-              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Tables />
-            </>
-          }
-        />
-        <Route
           path="/settings"
           element={
             <>
@@ -124,24 +118,38 @@ function App() {
           }
         />
         <Route
-          path="/auth/signin"
+          index
+          path="/authentication"
           element={
             <>
-              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <SignIn />
+              <PageTitle title="Signin | Register" />
+              <Authentication />
             </>
           }
         />
-        <Route
-          path="/auth/signup"
+
+      <Route
+          path="/style/:id"
           element={
             <>
-              <PageTitle title="Signup | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <SignUp />
+              <PageTitle title="Style View" />
+              <StyleView />
             </>
           }
         />
+
+      <Route
+          path="/messages"
+          element={
+            <>
+              <PageTitle title="Messages" />
+              <Messages />
+            </>
+          }
+        />
+
       </Routes>
+      
     </>
   );
 }
