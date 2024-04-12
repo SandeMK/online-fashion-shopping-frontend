@@ -1,12 +1,28 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
 import Logo from '../../images/logo/logo.svg';
 import DefaultLayout from '../../layout/DefaultLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faUser } from '@fortawesome/free-regular-svg-icons';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
+import { useMergeState } from '../../hooks/useMergeState';
+import { Actions } from './actions';
+import { useAppContext } from '../../context';
 
-const SignUp = ({ setState }) => {
+export interface SignUpState {
+  display_name: string;
+  email: string;
+  phone_number: string;
+  password: string;
+  password_confirmation: string;
+  user_type: string;
+  isLoading: boolean;
+}
+const SignUp = ({ setState: update }) => {
+  const { setState: setAppState} = useAppContext()
+  const [state, setState] = useMergeState<Partial<SignUpState>>({
+    isLoading: false,
+  })
+  const { validateAndSignUp } = Actions(setAppState)
+
   return (
     <DefaultLayout>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -35,12 +51,16 @@ const SignUp = ({ setState }) => {
               <form>
                 <div className='flex space-x-4 mb-4'>
                   <div className='flex space-x-1'>
-                    <input type="radio" id="client" name="drone" value="client" checked />
+                    <input type="radio" id="client" name="drone" value={state.user_type} checked={state.user_type === 'client'} onClick={(_) => {
+                      setState({user_type: 'client'})
+                    }} />
                     <label>Client</label>
                   </div>
 
                   <div className='flex space-x-1'>
-                    <input type="radio" id="stylist" name="drone" value="stylist" />
+                    <input type="radio" id="stylist" name="drone" value={state.user_type} checked={state.user_type === 'stylist'} onClick={(_) => {
+                      setState({user_type: 'stylist'})
+                    }} />
                     <label>Stylist</label>
                   </div>
                   </div>
@@ -50,6 +70,9 @@ const SignUp = ({ setState }) => {
                   </label>
                   <div className="relative">
                     <input
+                    onChange={(e) => {
+                      setState({display_name: e.target.value})
+                    }}
                       type="text"
                       placeholder="Enter your full name"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -67,6 +90,9 @@ const SignUp = ({ setState }) => {
                   </label>
                   <div className="relative">
                     <input
+                      onChange={(e) => {
+                        setState({email: e.target.value})
+                      }}
                       type="email"
                       placeholder="Enter your email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -84,8 +110,11 @@ const SignUp = ({ setState }) => {
                   </label>
                   <div className="relative">
                     <input
+                      onChange={(e) => {
+                        setState({phone_number: e.target.value})
+                      }}
                       type="tel"
-                      placeholder="Enter your email"
+                      placeholder="Enter your phone number"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
 
@@ -103,6 +132,9 @@ const SignUp = ({ setState }) => {
                   </label>
                   <div className="relative">
                     <input
+                      onChange={(e) => {
+                        setState({password: e.target.value})
+                      }}
                       type="password"
                       placeholder="Enter your password"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -120,6 +152,9 @@ const SignUp = ({ setState }) => {
                   </label>
                   <div className="relative">
                     <input
+                      onChange={(e) => {
+                        setState({password_confirmation: e.target.value})
+                      }}
                       type="password"
                       placeholder="Re-enter your password"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -134,7 +169,12 @@ const SignUp = ({ setState }) => {
                 <div className="mb-5">
                   <input
                     type="submit"
-                    value="Create account"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      validateAndSignUp(state, setState)
+                    }}
+                    disabled={state.isLoading}
+                    value={state.isLoading ? 'Loading...' : 'Sign Up'}
                     className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                   />
                 </div>
@@ -143,7 +183,7 @@ const SignUp = ({ setState }) => {
                   <p>
                     Already have an account?{' '}
                     <span className="text-primary" onClick={() => {
-                     setState({path: "/auth/signin"})
+                     update({path: "/auth/signin"})
                     }}>
                       Sign in
                     </span>

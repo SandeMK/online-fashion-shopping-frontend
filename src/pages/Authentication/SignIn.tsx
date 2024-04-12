@@ -8,7 +8,7 @@ import { useMergeState } from '../../hooks/useMergeState';
 import { login } from '../../apis/authentication/login';
 import toast from 'react-hot-toast';
 
-interface State {
+interface SignInState {
   email: string
   password: string
 
@@ -16,15 +16,13 @@ interface State {
 
 const SignIn = ({ setState }) => {
   const { setState: setAppState } = useAppContext()
-  const [state, _setState] = useMergeState<Partial<State>>({
+  const [state, _setState] = useMergeState<Partial<SignInState>>({
     email: '',
     password: '',
   })
 
   const signin = async () => {
-
     const { message, user } = await login({ email: state.email, password: state.password })
-    console.log('data', user, 'message', message)
     if (user) {
       setAppState({ isAuthenticated: true, user })
     } else {
@@ -40,13 +38,13 @@ const SignIn = ({ setState }) => {
               <div className="mb-5.5 inline-block">
                 <img className="hidden dark:block" src={Logo} alt="Logo" />
                 <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                  Online Fashion Shopping
+                StylesPhere
                 </h2>
               </div>
 
               <p className="2xl:px-20">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                suspendisse.
+              "Your ultimate fashion destination! Discover endless styles, curated just for you.
+              Get the latest trends & recommendations effortlessly and redefine your wardrobe with every click."
               </p>
 
               <span className="mt-15 inline-block">
