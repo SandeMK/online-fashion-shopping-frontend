@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBoxOpen, faVestPatches } from '@fortawesome/free-solid-svg-icons';
 import { faMessage } from '@fortawesome/free-regular-svg-icons';
+import { useAppContext } from '../../context';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -10,6 +11,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+  const { state: { user } } = useAppContext()
   const location = useLocation();
   const { pathname } = location;
 
@@ -107,7 +109,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
             <ul className="mb-6 flex flex-col gap-1.5">
               {/* <!-- Menu Item Dashboard --> */}
-              <NavLink
+             {
+              user.user_type === 'client' && (
+                <NavLink
                 to="/"
                 className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                   (pathname === '/' ||
@@ -120,6 +124,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 Dashboard
                 
               </NavLink>
+              )
+             }
               {/* <!-- Menu Item Dashboard --> */}
 
               {/* <!-- Menu Item Profile --> */}
