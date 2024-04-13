@@ -1,16 +1,13 @@
-//import { apiConfig } from "../../apis/config"
+import toast from "react-hot-toast"
+import { apiConfig } from "../../apis/config"
 import { State } from "./interfaces"
 
 export const Actions = (state: Partial<State>, setState: (state: Partial<State>) => void) => {
     return {
         getStyles: async (custom_token: string) => {
             if(state.isLoading) return
-            console.log('isLoading', state.isLoading)
-            console.log('custom_token', custom_token)
-            /*setState({ isLoading: true })
-            console.log('isLoading', state.isLoading)
-            console.log('custom_token', custom_token)
-            try {
+            setState({ isLoading: true })
+            /*try {
                 const response = await fetch(`${apiConfig.baseURL}/styles/all`, {
                     method: 'GET',
                     headers: {
@@ -19,17 +16,18 @@ export const Actions = (state: Partial<State>, setState: (state: Partial<State>)
                     },
 
                 })
+               
                 if (response.ok) {
                     const result = await response.json()
-                    setState({ styles: result.styles })
+                    setState({ styles: [...result] })
                 }
             } catch (error) {
-                //return { message: error.message }
+                toast.error('An error occurred while fetching style data')
             } finally {
                 setState({ isLoading: false })
             }*/
 
-            setState({ styles: styles })
+            setState({ styles: [...new Set(styles)] })
         }
     }
 }

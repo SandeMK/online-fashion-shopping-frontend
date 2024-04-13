@@ -1,4 +1,4 @@
-import deepmerge from 'deepmerge'
+import { deepmerge } from '@mui/utils'
 import { useState } from 'react'
 
 /**

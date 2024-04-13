@@ -139,7 +139,7 @@ function App() {
         />
 
       <Route
-          path="/messages"
+          path="/messages/:id"
           element={
             <>
               <PageTitle title="Messages" />

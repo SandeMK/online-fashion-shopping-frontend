@@ -25,7 +25,7 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     fromLocalStorage()
   }, [])
-
+  
   return (
     <AppContext.Provider value={memoizedProviderValue}>
       {children}

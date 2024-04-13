@@ -4,4 +4,5 @@ export interface IAppState {
     user?: User
     isAuthenticated: boolean
     custom_token?: string
+    stylesFilter?: string
 }
