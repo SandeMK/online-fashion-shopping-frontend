@@ -6,6 +6,7 @@ const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
+  const path = window.location.pathname
   const { state: { isAuthenticated }, setState } = useAppContext()
   return (
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
@@ -59,7 +60,7 @@ const Header = (props: {
 
         <div className="hidden sm:block">
          {
-          isAuthenticated && (
+          isAuthenticated && path == '/' && (
             <form action="https://formbold.com/s/unique_form_id" method="POST">
             <div className="relative">
               <button className="absolute left-0 top-1/2 -translate-y-1/2">

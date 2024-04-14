@@ -8,7 +8,7 @@ import { useMergeState } from "../../hooks/useMergeState";
 import { Actions } from "./actions";
 import { useAppContext } from "../../context";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserAlt } from "@fortawesome/free-solid-svg-icons";
+import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { StylistItem } from "./components/StylistItem";
 
 export interface StyleViewState {
@@ -61,15 +61,22 @@ const StyleView: React.FC = () => {
             </div>
            
                <div className='flex flex-col  space-y-2 py-4'>
-               {
-                 state.data.stylists.map((stylist: User, i) => {
-                   return (
-                      <div key={`data.stylists.${i}`}>
-                        <StylistItem stylist={stylist} />
-                      </div>
-                   )
-                 })
-               }
+              {
+                state.data.stylists.length === 0 ? (
+                  <div className='flex items-center justify-center'>
+                    <FontAwesomeIcon icon={faWarning} size='3x' />
+                    <span className='text-lg font-medium'>No Stylists found for this category!</span>
+                  </div>
+                ) : (
+                    state.data.stylists.map((stylist: User, i) => {
+                      return (
+                         <div key={`data.stylists.${i}`}>
+                           <StylistItem stylist={stylist} />
+                         </div>
+                      )
+                    })
+                )
+              }
                </div>
             </div>
            </div>

@@ -46,7 +46,7 @@ export const ChatsContainer = ({ chat, conversationId }: ChatsContainerProps) =>
         <div className='flex flex-col w-full'>
             <div className='flex flex-col p-4 bg-white'>
                 <h1 className='text-title-sm font-bold text-black dark:text-white'>{ chat?.receiver_name }</h1>
-                <a className='text-black dark:text-white'>{ chat?.receiver_bio }</a>
+                <a className='text-black dark:text-white border-l pl-1'>{ chat?.receiver_bio }</a>
             </div>
            
 
