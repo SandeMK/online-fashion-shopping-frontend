@@ -1,8 +1,29 @@
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
+import { useAppContext } from '../context';
+import { useMergeState } from '../hooks/useMergeState';
 import userThree from '../images/user/user-03.png';
 import DefaultLayout from '../layout/DefaultLayout';
+import { Actions } from './actions';
 
+export interface SettingsState {
+  display_name: string;
+  phone_number: string;
+  bio: string;
+  styles?: string[]
+  isLoading?: boolean
+}
 const Settings = () => {
+  const { state: { user }, setState: updateAppContext } = useAppContext()
+  const [state, setState] = useMergeState<Partial<SettingsState>>({
+    display_name: user?.display_name || '',
+    phone_number: user?.phone_number || '',
+    bio: user?.bio || '',
+    styles: user?.styles || [],
+    isLoading: false
+  })
+
+  const { validateAndUpdateProfile } = Actions(updateAppContext)
+
   return (
     <DefaultLayout>
       <div className="mx-auto max-w-270">
@@ -58,7 +79,8 @@ const Settings = () => {
                           name="fullName"
                           id="fullName"
                           placeholder="Devid Jhon"
-                          defaultValue="Devid Jhon"
+                          value={state.display_name}
+                          onChange={(e) => setState({ display_name: e.target.value })}
                         />
                       </div>
                     </div>
@@ -76,7 +98,8 @@ const Settings = () => {
                         name="phoneNumber"
                         id="phoneNumber"
                         placeholder="+990 3343 7865"
-                        defaultValue="+990 3343 7865"
+                        value={state.phone_number}
+                        onChange={(e) => setState({ phone_number: e.target.value })}
                       />
                     </div>
                   </div>
@@ -119,28 +142,13 @@ const Settings = () => {
                         type="email"
                         name="emailAddress"
                         id="emailAddress"
+                        disabled
                         placeholder="devidjond45@gmail.com"
-                        defaultValue="devidjond45@gmail.com"
+                        value={user?.email}
                       />
                     </div>
                   </div>
 
-                  <div className="mb-5.5">
-                    <label
-                      className="mb-3 block text-sm font-medium text-black dark:text-white"
-                      htmlFor="Username"
-                    >
-                      Username
-                    </label>
-                    <input
-                      className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      type="text"
-                      name="Username"
-                      id="Username"
-                      placeholder="devidjhon24"
-                      defaultValue="devidjhon24"
-                    />
-                  </div>
 
                   <div className="mb-5.5">
                     <label
@@ -184,10 +192,12 @@ const Settings = () => {
                       <textarea
                         className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         name="bio"
+                        value={state.bio}
+                        disabled={state.isLoading}
+                        onChange={(e) => setState({ bio: e.target.value })}
                         id="bio"
                         rows={6}
                         placeholder="Write your bio here"
-                        defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere fermentum urna, eu condimentum mauris tempus ut. Donec fermentum blandit aliquet."
                       ></textarea>
                     </div>
                   </div>
@@ -200,10 +210,15 @@ const Settings = () => {
                       Cancel
                     </button>
                     <button
+                      disabled={state.isLoading}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        validateAndUpdateProfile(state, setState, user)
+                      }}
                       className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
                       type="submit"
                     >
-                      Save
+                      { state.isLoading ? 'Saving...' : 'Save'}
                     </button>
                   </div>
                 </form>

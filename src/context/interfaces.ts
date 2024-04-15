@@ -1,7 +1,7 @@
 import { User } from "../types/user";
 
 export interface IAppState {
-    user?: User
+    user?: Partial<User>
     isAuthenticated: boolean
     custom_token?: string
     stylesFilter?: string

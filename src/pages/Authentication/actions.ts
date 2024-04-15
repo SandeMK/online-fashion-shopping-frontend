@@ -31,7 +31,7 @@ export const Actions = (setAppState: (value: Partial<IAppState>) => void) => {
             if (!validate(state)) return
 
             setState({ isLoading: true })
-            fetch(`${apiConfig.baseURL}/user/register`, {
+            await fetch(`${apiConfig.baseURL}/user/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
