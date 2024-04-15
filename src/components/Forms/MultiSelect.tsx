@@ -1,41 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
-
-interface Option {
-  value: string;
-  text: string;
-  selected: boolean;
-  element?: HTMLElement;
-}
+import { useMergeState } from '../../hooks/useMergeState';
+import { Style } from '../../types/style';
+import { styles } from '../../pages/Dashboard/actions';
+import { useAppContext } from '../../context';
 
 interface DropdownProps {
   id: string;
+  updateStyles: (styles: string[]) => void;
 }
 
-const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
-  const [options, setOptions] = useState<Option[]>([]);
-  const [selected, setSelected] = useState<number[]>([]);
+export interface MultiSelectState {
+  options: Style[]
+  selected: string[]
+}
+
+const MultiSelect: React.FC<DropdownProps> = ({ id, updateStyles }) => {
+  const { state: { user } } = useAppContext()
   const [show, setShow] = useState(false);
   const dropdownRef = useRef<any>(null);
   const trigger = useRef<any>(null);
 
-  useEffect(() => {
-    const loadOptions = () => {
-      const select = document.getElementById(id) as HTMLSelectElement | null;
-      if (select) {
-        const newOptions: Option[] = [];
-        for (let i = 0; i < select.options.length; i++) {
-          newOptions.push({
-            value: select.options[i].value,
-            text: select.options[i].innerText,
-            selected: select.options[i].hasAttribute('selected'),
-          });
-        }
-        setOptions(newOptions);
-      }
-    };
 
-    loadOptions();
-  }, [id]);
+  const [state, setState] = useMergeState({
+    options: [...styles].filter((option) => !user.styles.includes(option.id)),
+    selected: user.styles
+  })
 
    const open = () => {
      setShow(true);
@@ -45,38 +34,20 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
      return show === true;
    };
 
- const select = (index: number, event: React.MouseEvent) => {
-   const newOptions = [...options];
-
-   if (!newOptions[index].selected) {
-     newOptions[index].selected = true;
-     newOptions[index].element = event.currentTarget as HTMLElement;
-     setSelected([...selected, index]);
-   } else {
-     const selectedIndex = selected.indexOf(index);
-     if (selectedIndex !== -1) {
-       newOptions[index].selected = false;
-       setSelected(selected.filter((i) => i !== index));
-     }
+   const _select = (id: string) => {
+    const options = state.options.filter(option => option.id !== id)
+    setState({ selected: [...state.selected, id], options })
    }
 
-   setOptions(newOptions);
- };
+  const _remove = (id: string) => {
+      const selected = state.selected.filter((_id) => _id !== id)
+      const option = styles.find((option) => option.id === id)
+      setState({ selected, options: [...state.options, option] })
+  }
 
-  const remove = (index: number) => {
-    const newOptions = [...options];
-    const selectedIndex = selected.indexOf(index);
-
-    if (selectedIndex !== -1) {
-      newOptions[index].selected = false;
-      setSelected(selected.filter((i) => i !== index));
-      setOptions(newOptions);
-    }
-  };
-
-  const selectedValues = () => {
-    return selected.map((option) => options[option].value);
-  };
+  useEffect(() => {
+    updateStyles(state.selected)
+  }, [state.selected])
 
     useEffect(() => {
       const clickHandler = ({ target }: MouseEvent) => {
@@ -94,36 +65,39 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
     });
 
   return (
-    <div className="relative z-50">
+    <div className="relative z-50 p-4">
       <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-        Multiselect Dropdown
+        Fashion Styles
       </label>
       <div>
         <select className="hidden" id={id}>
-          <option value="1">Option 2</option>
-          <option value="2">Option 3</option>
-          <option value="3">Option 4</option>
-          <option value="4">Option 5</option>
+        {
+            state.options.map((option, index) => {
+              return <option key={index} value={option.id} selected={state.selected.includes(option.id)}>{option.name}</option>
+            })
+         }
         </select>
 
         <div className="flex flex-col items-center">
-          <input name="values" type="hidden" defaultValue={selectedValues()} />
+          <input name="values" type="hidden" />
           <div className="relative z-20 inline-block w-full">
             <div className="relative flex flex-col items-center">
               <div ref={trigger} onClick={open} className="w-full">
                 <div className="mb-2 flex rounded border border-stroke py-2 pl-3 pr-3 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
                   <div className="flex flex-auto flex-wrap gap-3">
-                    {selected.map((index) => (
-                      <div
-                        key={index}
+                    {state.selected.map((id) => {
+                      const option = styles.find((option) => option.id === id)
+                      return (
+                        <div
+                        key={id}
                         className="my-1.5 flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30"
                       >
                         <div className="max-w-full flex-initial">
-                          {options[index].text}
+                          {option.name}
                         </div>
                         <div className="flex flex-auto flex-row-reverse">
                           <div
-                            onClick={() => remove(index)}
+                            onClick={() => _remove(id)}
                             className="cursor-pointer pl-2 hover:text-danger"
                           >
                             <svg
@@ -145,13 +119,13 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
                           </div>
                         </div>
                       </div>
-                    ))}
-                    {selected.length === 0 && (
+                      )
+                    })}
+                    {state.selected.length === 0 && (
                       <div className="flex-1">
                         <input
                           placeholder="Select an option"
                           className="h-full w-full appearance-none bg-transparent p-1 px-2 outline-none"
-                          defaultValue={selectedValues()}
                         />
                       </div>
                     )}
@@ -192,20 +166,20 @@ const MultiSelect: React.FC<DropdownProps> = ({ id }) => {
                   onBlur={() => setShow(false)}
                 >
                   <div className="flex w-full flex-col">
-                    {options.map((option, index) => (
+                    {state.options.map((option, index) => (
                       <div key={index}>
                         <div
                           className="w-full cursor-pointer rounded-t border-b border-stroke hover:bg-primary/5 dark:border-form-strokedark"
-                          onClick={(event) => select(index, event)}
+                          onClick={(event) => _select(option.id)}
                         >
                           <div
                             className={`relative flex w-full items-center border-l-2 border-transparent p-2 pl-2 ${
-                              option.selected ? 'border-primary' : ''
+                              1==1 ? 'border-primary' : ''
                             }`}
                           >
                             <div className="flex w-full items-center">
                               <div className="mx-2 leading-6">
-                                {option.text}
+                                {option.name}
                               </div>
                             </div>
                           </div>

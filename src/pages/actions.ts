@@ -16,9 +16,9 @@ export const Actions = (updateAppContext: (value: Partial<IAppState>) => void) =
             }
 
             if(user.user_type === 'stylist') {
-                data['styles'] = {
+                data['styles'] = [
                     ...state.styles
-                }
+                ]
             }
 
             if (!data.display_name || !data.bio || !data.phone_number) {

@@ -5,7 +5,7 @@ import { useMergeState } from "../../../hooks/useMergeState";
 import { ChatsContainerState } from "./interfaces";
 import { ChatData } from "../interfaces";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faMailBulk, faPaperPlane, faPhoneAlt } from "@fortawesome/free-solid-svg-icons";
 import { FirestoreActions } from "./firestore.actions";
 
 export interface ChatsContainerProps {
@@ -45,7 +45,17 @@ export const ChatsContainer = ({ chat, conversationId }: ChatsContainerProps) =>
         state.conversation ? (
         <div className='flex flex-col w-full'>
             <div className='flex flex-col p-4 bg-white'>
-                <h1 className='text-title-sm font-bold text-black dark:text-white'>{ chat?.receiver_name }</h1>
+                <div className="flex w-full space-x-4 items-baseline">
+                    <h1 className='text-title-sm font-bold text-black dark:text-white'>{ chat?.receiver_name }</h1>
+                    <div>
+                        <FontAwesomeIcon icon={faMailBulk} />
+                        <a className='dark:text-gray-400'> { chat.reciever_email }</a> 
+                    </div>
+                    <div>
+                        <FontAwesomeIcon icon={faPhoneAlt} />
+                        <a className='dark:text-gray-400'> { chat.receiver_phone_number }</a> 
+                    </div>
+                </div>
                 <a className='text-black dark:text-white border-l pl-1'>{ chat?.receiver_bio }</a>
             </div>
            

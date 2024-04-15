@@ -14,6 +14,8 @@ export const FirestoreActions = (state: Partial<MessagesState>, setState: (initS
            id: data.id,
            display_name: data.display_name,
            bio: data.bio,
+           email: data.email,
+           phone_number: data.phone_number,
         } as User
     }
 
@@ -42,6 +44,8 @@ export const FirestoreActions = (state: Partial<MessagesState>, setState: (initS
                                 receiver_id,
                                 receiver_name: receiver.display_name,
                                 receiver_bio: receiver.bio,
+                                reciever_email: receiver.email,
+                                receiver_phone_number: receiver.phone_number
                             }
 
                             setState({ chatData: [...state.chatData, entry] })
